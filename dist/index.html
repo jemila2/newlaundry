@@ -1,31 +1,403 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Redirecting to The Jemila Laundry</title>
-    <script type="text/javascript">
-      // Fix for the redirect loop issue
-      var path = window.location.pathname;
-      if (!path.includes('/~and~/') && !window.location.search.includes('?/')) {
-        var segmentCount = 0;
-        var l = window.location;
-        var newPath = l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
-          l.pathname.split('/').slice(0, 1 + segmentCount).join('/') + '/?/' +
-          l.pathname.slice(1).split('/').slice(segmentCount).join('/').replace(/&/g, '~and~') +
-          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
-          l.hash;
-        
-        // Prevent infinite redirects
-        if (l.href !== newPath) {
-          window.history.replaceState(null, null, newPath);
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vercel Deployment Error Solutions</title>
+    <style>
+        :root {
+            --primary: #0070f3;
+            --secondary: #7928ca;
+            --success: #17c964;
+            --warning: #f5a623;
+            --error: #ff4d4f;
+            --light: #fafafa;
+            --dark: #333;
+            --gray: #666;
+            --light-gray: #eaeaea;
         }
-      }
-    </script>
-    <noscript>
-      <meta http-equiv="refresh" content="0; url=/" />
-    </noscript>
-  </head>
-  <body>
-    <p>Redirecting to <a href="/">The Jemila Laundry</a>...</p>
-  </body>
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .error-section {
+            background: var(--light);
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-gray);
+        }
+        
+        h3 {
+            color: var(--secondary);
+            margin: 15px 0 10px;
+        }
+        
+        .error-block {
+            background: #fff5f5;
+            border-left: 4px solid var(--error);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        
+        .solution-block {
+            background: #f0fff4;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        code {
+            background: var(--light-gray);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        
+        pre {
+            background: var(--dark);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        .step {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        .step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 30px;
+            margin-right: 10px;
+        }
+        
+        .note {
+            background: #e6f7ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .warning {
+            background: #fffbe6;
+            border-left: 4px solid var(--warning);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        .success {
+            background: #f6ffed;
+            border-left: 4px solid var(--success);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: var(--light);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        .icon {
+            display: inline-block;
+            margin-right: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Vercel Deployment Error Solutions</h1>
+            <p class="subtitle">Fixing common issues when deploying to Vercel</p>
+        </header>
+        
+        <div class="content">
+            <div class="error-section">
+                <h2>Error 1: Permission Denied (Exit Code 126)</h2>
+                
+                <div class="error-block">
+                    Running "npm run build"
+                    > laundryfr@0.0.0 build
+                    > vite build
+                    sh: line 1: /vercel/path0/node_modules/.bin/vite: Permission denied
+                    Error: Command "npm run build" exited with 126
+                </div>
+                
+                <h3>What this means:</h3>
+                <p>The Vercel build environment doesn't have execute permissions for the Vite binary, usually due to permission issues in your node_modules.</p>
+                
+                <h3>Solutions:</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Fix file permissions locally:</strong>
+                    <pre>rm -rf node_modules package-lock.json
+npm install</pre>
+                    <p>Never use <code>sudo</code> with npm install as it causes permission issues.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Ensure Vite is a local dependency:</strong>
+                    <p>Check your package.json has Vite in devDependencies:</p>
+                    <pre>{
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Verify build script:</strong>
+                    <p>Ensure your package.json has the correct build script:</p>
+                    <pre>{
+  "scripts": {
+    "build": "vite build"
+  }
+}</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Clear Vercel build cache:</strong>
+                    <p>In Vercel dashboard, redeploy and uncheck "Use existing build cache".</p>
+                </div>
+                
+                <div class="note">
+                    <span class="icon">ℹ️</span> The "125 packages looking for funding" message is just informational and not related to the error.
+                </div>
+            </div>
+            
+            <div class="error-section">
+                <h2>Error 2: 404 Resource Not Found</h2>
+                
+                <div class="error-block">
+                    (index):1 Failed to load resource: the server responded with a status of 404 ()
+                </div>
+                
+                <h3>What this means:</h3>
+                <p>The browser is trying to load a file (JS, CSS, image) that doesn't exist at the specified path on the server.</p>
+                
+                <h3>Solutions:</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Check file paths in HTML:</strong>
+                    <p>Ensure paths in <code>src</code> and <code>href</code> attributes are correct:</p>
+                    <pre>&lt;!-- Correct --&gt;
+&lt;link href="/css/main.css" rel="stylesheet"&gt;
+
+&lt;!-- Incorrect --&gt;
+&lt;link href="../public/css/main.css" rel="stylesheet"&gt;</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Verify static file serving:</strong>
+                    <p>If using Express.js, ensure proper static file configuration:</p>
+                    <pre>app.use(express.static(__dirname + '/public'));</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Check case sensitivity:</strong>
+                    <p>Linux servers (like Vercel) are case-sensitive. Ensure file cases match exactly.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Verify build output directory:</strong>
+                    <p>Check your framework configuration (vite.config.js) for correct output directory:</p>
+                    <pre>// vite.config.js
+export default defineConfig({
+  build: {
+    outDir: 'dist',
+  },
+})</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">5</span>
+                    <strong>Use Network tab for debugging:</strong>
+                    <p>Open browser DevTools → Network tab to see which specific resource is returning 404.</p>
+                </div>
+                
+                <div class="warning">
+                    <span class="icon">⚠️</span> Always test your build locally with <code>npm run build && npm run preview</code> before deploying.
+                </div>
+            </div>
+            
+            <div class="error-section">
+                <h2>Preventive Measures</h2>
+                
+                <h3>For future deployments:</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Proper .gitignore:</strong>
+                    <p>Ensure node_modules is in your .gitignore file:</p>
+                    <pre>node_modules/
+.env
+.DS_Store
+dist/
+build/</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Specify Node.js version:</strong>
+                    <p>Add engines field to package.json:</p>
+                    <pre>{
+  "engines": {
+    "node": "18.x"
+  }
+}</pre>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Test builds locally:</strong>
+                    <p>Always run <code>npm run build</code> locally before deploying to catch issues early.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Use Vercel CLI for testing:</strong>
+                    <p>Test with Vercel CLI to simulate deployment environment:</p>
+                    <pre>npm i -g vercel
+vercel build</pre>
+                </div>
+                
+                <div class="success">
+                    <span class="icon">✅</span> Following these steps should resolve most Vercel deployment issues.
+                </div>
+            </div>
+            
+            <div class="error-section">
+                <h2>Need More Help?</h2>
+                
+                <h3>Additional Resources:</h3>
+                
+                <div class="step">
+                    <span class="step-number">1</span>
+                    <strong>Vercel Documentation:</strong>
+                    <p>Comprehensive guides for troubleshooting deployment issues.</p>
+                    <p><a href="https://vercel.com/docs" target="_blank">https://vercel.com/docs</a></p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">2</span>
+                    <strong>Vercel Community:</strong>
+                    <p>Ask questions and get help from other developers.</p>
+                    <p><a href="https://github.com/vercel/community" target="_blank">Vercel Community GitHub</a></p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">3</span>
+                    <strong>Check Build Logs:</strong>
+                    <p>In Vercel dashboard, inspect build logs for detailed error information.</p>
+                </div>
+                
+                <div class="step">
+                    <span class="step-number">4</span>
+                    <strong>Contact Support:</strong>
+                    <p>If issues persist, contact Vercel support with your deployment logs.</p>
+                </div>
+                
+                <div class="note">
+                    <span class="icon">ℹ️</span> Most deployment issues can be resolved by carefully checking paths, permissions, and configuration files.
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>This guide is based on common Vercel deployment issues and their solutions.</p>
+            <p>For your specific project "The Jemila Laundry", focus on the permission and path issues highlighted above.</p>
+        </footer>
+    </div>
+</body>
 </html>
